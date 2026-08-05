@@ -55,6 +55,17 @@ const notes = [
   },
 ];
 
+const certifications = [
+  {
+    title: "Google Project Management",
+    date: { vn: "2026", en: "2026" },
+  },
+  {
+    title: "VSTEP B1",
+    date: { vn: "2022", en: "2022" },
+  },
+];
+
 const toneColor = {
   info: "var(--color-info)",
   success: "var(--color-success)",
@@ -147,21 +158,17 @@ export default function Home() {
               letterSpacing: "-0.01em",
             }}
           >
-            <Box
-              sx={{
-                display: "grid",
-                placeItems: "center",
-                width: 28,
-                height: 28,
-                borderRadius: "var(--radius-sm)",
-                bgcolor: "var(--color-primary)",
-                color: "#fff",
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.7rem",
+            <Image
+              src="/logo-white.png"
+              alt=""
+              width={40}
+              height={40}
+              aria-hidden="true"
+              style={{
+                borderRadius: "50%",
+                objectFit: "cover",
               }}
-            >
-              ĐN
-            </Box>
+            />
             Đào Hoa Nữ
           </Button>
           {!isMobile && (
@@ -906,28 +913,13 @@ export default function Home() {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
             gap: 3,
           }}
+          aria-label={t("Danh sách chứng chỉ", "Certifications")}
         >
-          {[
-            [
-              t("CHỨNG CHỈ", "CERTIFICATION"),
-              "Google Project Management",
-              "2026 · VSTEP B1 · 2022",
-            ],
-            [
-              t("GHI NHẬN", "RECOGNITION"),
-              t("Tốt nghiệp loại Giỏi", "Good Graduation"),
-              t("Đại học An Giang · 2024", "An Giang University · 2024"),
-            ],
-            [
-              t("HỌC VẤN", "EDUCATION"),
-              t("Công nghệ thông tin", "Information Technology"),
-              "An Giang University · 2020 — 2024 · GPA 3.51 / 4",
-            ],
-          ].map(([label, title, body]) => (
-            <Card key={title} sx={{ ...surface, minHeight: 190 }}>
+          {certifications.map((certification) => (
+            <Card key={certification.title} sx={{ ...surface, minHeight: 190 }}>
               <CardContent
                 sx={{
                   p: 3,
@@ -937,12 +929,14 @@ export default function Home() {
                   "&:last-child": { pb: 3 },
                 }}
               >
-                <Typography sx={eyebrowSx}>{label}</Typography>
+                <Typography sx={eyebrowSx}>
+                  {t("CHỨNG CHỈ", "CERTIFICATION")}
+                </Typography>
                 <Typography
                   variant="h6"
                   sx={{ mt: "auto", mb: 1, fontWeight: 600 }}
                 >
-                  {title}
+                  {certification.title}
                 </Typography>
                 <Typography
                   sx={{
@@ -950,11 +944,78 @@ export default function Home() {
                     fontSize: "0.8125rem",
                   }}
                 >
-                  {body}
+                  {certification.date[language]}
                 </Typography>
               </CardContent>
             </Card>
           ))}
+        </Box>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+            gap: 3,
+            mt: 3,
+          }}
+        >
+          <Card sx={{ ...surface, minHeight: 190 }}>
+            <CardContent
+              sx={{
+                p: 3,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                "&:last-child": { pb: 3 },
+              }}
+            >
+              <Typography sx={eyebrowSx}>
+                {t("GHI NHẬN", "RECOGNITION")}
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{ mt: "auto", mb: 1, fontWeight: 600 }}
+              >
+                {t("Tốt nghiệp loại Giỏi", "Good Graduation")}
+              </Typography>
+              <Typography
+                sx={{
+                  color: "var(--color-text-secondary)",
+                  fontSize: "0.8125rem",
+                }}
+              >
+                {t("Đại học An Giang · 2024", "An Giang University · 2024")}
+              </Typography>
+            </CardContent>
+          </Card>
+          <Card sx={{ ...surface, minHeight: 190 }}>
+            <CardContent
+              sx={{
+                p: 3,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                "&:last-child": { pb: 3 },
+              }}
+            >
+              <Typography sx={eyebrowSx}>
+                {t("HỌC VẤN", "EDUCATION")}
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{ mt: "auto", mb: 1, fontWeight: 600 }}
+              >
+                {t("Công nghệ thông tin", "Information Technology")}
+              </Typography>
+              <Typography
+                sx={{
+                  color: "var(--color-text-secondary)",
+                  fontSize: "0.8125rem",
+                }}
+              >
+                An Giang University · 2020 — 2024 · GPA 3.51 / 4
+              </Typography>
+            </CardContent>
+          </Card>
         </Box>
       </Container>
 
