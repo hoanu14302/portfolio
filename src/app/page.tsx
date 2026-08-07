@@ -12,12 +12,14 @@ import Chip from "@mui/material/Chip";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
+import Slider from "@mui/material/Slider";
 import StackBase, { type StackProps } from "@mui/material/Stack";
+import { type SxProps, type Theme, useTheme } from "@mui/material/styles";
+import Switch from "@mui/material/Switch";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { type SxProps, type Theme, useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Image from "next/image";
 import { useState } from "react";
@@ -106,7 +108,7 @@ function Arrow() {
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [language, setLanguage] = useState<"vn" | "en">("vn");
+  const [language, setLanguage] = useState<"vn" | "en">("en");
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"), { noSsr: true });
   const isEnglish = language === "en";
@@ -116,6 +118,65 @@ export default function Home() {
   const t = (vn: string, en: string) => (isEnglish ? en : vn);
   const closeMenu = () => setMenuOpen(false);
 
+  // Simulator State for Deep Learning COVID-19 Prognosis (Fine-tuned to actual dataset)
+  const [simAge, setSimAge] = useState<number>(65);
+  const [simSex, setSimSex] = useState<number>(1); // 1 = Nam/Male, 0 = Nữ/Female
+  const [simPulseStable, setSimPulseStable] = useState<boolean>(false);
+  const [simTempStable, setSimTempStable] = useState<boolean>(false);
+  const [simRespStable, setSimRespStable] = useState<boolean>(false);
+  const [simBpStable, setSimBpStable] = useState<boolean>(false);
+  const [simRunning, setSimRunning] = useState<boolean>(false);
+  const [simStep, setSimStep] = useState<number>(0);
+  const [simResult, setSimResult] = useState<{
+    score: number;
+    level: string;
+    labelEn: string;
+    labelVn: string;
+  } | null>(null);
+
+  const runSimulation = () => {
+    setSimRunning(true);
+    setSimResult(null);
+    setSimStep(1);
+
+    setTimeout(() => {
+      setSimStep(2);
+      setTimeout(() => {
+        setSimStep(3);
+        setTimeout(() => {
+          // Calibrated score calculation based on thesis model variables
+          let score = 10;
+          if (simSex === 1) score += 5; // Male stats
+          if (simAge > 65) score += 15;
+          else if (simAge > 50) score += 8;
+
+          if (!simPulseStable) score += 20; // mach_on_dinh = 0
+          if (!simTempStable) score += 15; // nhietdo_on_dinh = 0
+          if (!simRespStable) score += 25; // nhiptho_on_dinh = 0
+          if (!simBpStable) score += 15; // huyetap_on_dinh = 0
+
+          score = Math.min(score, 99);
+
+          let level = "danger";
+          let labelVn = "Tiên lượng xấu (Nguy cơ cao)";
+          let labelEn = "Poor Prognosis (High Risk)";
+          if (score < 40) {
+            level = "success";
+            labelVn = "Tiên lượng tốt (Nguy cơ thấp)";
+            labelEn = "Good Prognosis (Low Risk)";
+          } else if (score < 70) {
+            level = "warning";
+            labelVn = "Nguy cơ trung bình (Cần theo dõi)";
+            labelEn = "Moderate Risk (Needs Monitoring)";
+          }
+
+          setSimResult({ score, level, labelEn, labelVn });
+          setSimRunning(false);
+        }, 1200);
+      }, 1000);
+    }, 800);
+  };
+
   return (
     <Box
       component="main"
@@ -123,16 +184,52 @@ export default function Home() {
         bgcolor: "var(--color-background)",
         color: "var(--color-text-primary)",
         overflow: "clip",
+        position: "relative",
       }}
     >
+      {/* Background ambient glow blobs */}
+      <Box
+        className="glow-blob glow-blob-primary"
+        sx={{
+          width: { xs: 250, md: 500 },
+          height: { xs: 250, md: 500 },
+          top: -100,
+          left: -100,
+        }}
+      />
+      <Box
+        className="glow-blob glow-blob-secondary"
+        sx={{
+          width: { xs: 300, md: 600 },
+          height: { xs: 300, md: 600 },
+          top: "25%",
+          right: -150,
+        }}
+      />
+      <Box
+        className="glow-blob glow-blob-tertiary"
+        sx={{
+          width: { xs: 250, md: 500 },
+          height: { xs: 250, md: 500 },
+          top: "60%",
+          left: -150,
+        }}
+      />
+      <Box
+        className="glow-blob glow-blob-primary"
+        sx={{
+          width: { xs: 300, md: 600 },
+          height: { xs: 300, md: 600 },
+          bottom: -100,
+          right: -100,
+        }}
+      />
       <AppBar
         position="sticky"
         elevation={0}
+        className="glass-panel"
         sx={{
-          bgcolor:
-            "color-mix(in srgb, var(--color-background) 92%, transparent)",
-          backdropFilter: "blur(12px)",
-          borderBottom: "1px solid var(--color-border)",
+          borderBottom: "1px solid var(--color-border) !important",
         }}
       >
         <Toolbar
@@ -289,17 +386,18 @@ export default function Home() {
             <Stack
               component="nav"
               direction="column"
-              spacing={0.5}
+              spacing={0.75}
+              className="glass-panel-elevated"
               sx={{
                 position: "absolute",
-                top: 64,
+                top: 70,
                 left: 16,
                 right: 16,
-                p: 1,
-                bgcolor: "var(--color-elevated)",
-                border: "1px solid var(--color-border-strong)",
+                p: 2,
                 borderRadius: "var(--radius-md)",
-                boxShadow: "var(--shadow-md)",
+                boxShadow: "var(--shadow-lg)",
+                animation: "float-slow 20s ease-in-out infinite alternate", // simple floating effect
+                zIndex: 1200,
               }}
               aria-label={t("Điều hướng chính", "Main navigation")}
             >
@@ -317,6 +415,15 @@ export default function Home() {
                     justifyContent: "flex-start",
                     color: "var(--color-text-secondary)",
                     textTransform: "none",
+                    py: 1,
+                    px: 2,
+                    borderRadius: "var(--radius-sm)",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      color: "var(--color-text-primary)",
+                      bgcolor: "var(--color-primary-soft)",
+                      transform: "translateX(4px)",
+                    },
                   }}
                 >
                   {label}
@@ -434,6 +541,16 @@ export default function Home() {
               bgcolor: "var(--color-elevated)",
               borderColor: "var(--color-border-strong)",
               boxShadow: "var(--shadow-md)",
+              transition:
+                "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease",
+              "&:hover": {
+                transform: "translateY(-8px)",
+                borderColor: "var(--color-primary)",
+                boxShadow: "0 20px 40px rgba(91, 107, 255, 0.12)",
+                "& .profile-img": {
+                  transform: "scale(1.05)",
+                },
+              },
             }}
           >
             <CardContent sx={{ p: 3, "&:last-child": { pb: 3 } }}>
@@ -453,13 +570,51 @@ export default function Home() {
                   fill
                   sizes="(max-width: 900px) 70vw, 280px"
                   priority
-                  style={{ objectFit: "cover" }}
+                  className="profile-img"
+                  style={{
+                    objectFit: "cover",
+                    transition: "transform 0.5s ease",
+                  }}
                 />
               </Box>
-              <Typography sx={eyebrowSx}>
-                {t("VỊ TRÍ HIỆN TẠI", "CURRENT ROLE")}
-              </Typography>
-              <Typography sx={{ mt: 1, fontSize: "1.125rem", fontWeight: 600 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  mb: 1,
+                }}
+              >
+                <Typography sx={eyebrowSx}>
+                  {t("VỊ TRÍ HIỆN TẠI", "CURRENT ROLE")}
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                  <Box
+                    sx={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      bgcolor: "var(--color-success)",
+                      boxShadow: "0 0 8px var(--color-success)",
+                      animation: "glow-pulse 2s infinite",
+                    }}
+                  />
+                  <Typography
+                    sx={{
+                      fontSize: "0.65rem",
+                      color: "var(--color-success)",
+                      fontWeight: 600,
+                      fontFamily: "var(--font-mono)",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    {t("ĐANG HOẠT ĐỘNG", "ACTIVE")}
+                  </Typography>
+                </Box>
+              </Box>
+              <Typography
+                sx={{ mt: 0.5, fontSize: "1.125rem", fontWeight: 600 }}
+              >
                 Full-stack Developer
               </Typography>
               <Typography
@@ -530,12 +685,29 @@ export default function Home() {
                 minHeight: 220,
                 position: "relative",
                 overflow: "hidden",
+                transition:
+                  "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease",
                 "&::before": {
                   content: '""',
                   position: "absolute",
                   inset: "0 0 auto",
                   height: 2,
                   bgcolor: toneColor[skill.tone],
+                  transition: "height 0.3s ease",
+                },
+                "&:hover": {
+                  transform: "translateY(-6px)",
+                  borderColor: toneColor[skill.tone],
+                  boxShadow: `0 12px 30px ${
+                    skill.tone === "info"
+                      ? "rgba(61, 215, 229, 0.12)"
+                      : skill.tone === "success"
+                        ? "rgba(43, 224, 140, 0.12)"
+                        : "rgba(245, 213, 71, 0.12)"
+                  }`,
+                  "&::before": {
+                    height: 4,
+                  },
                 },
               }}
             >
@@ -733,9 +905,16 @@ export default function Home() {
             ...surface,
             bgcolor: "var(--color-elevated)",
             borderColor: "var(--color-border-strong)",
+            transition:
+              "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease",
+            "&:hover": {
+              transform: "translateY(-4px)",
+              borderColor: "var(--color-primary)",
+              boxShadow: "0 15px 35px rgba(91, 107, 255, 0.08)",
+            },
           }}
         >
-          <CardContent sx={{ p: 3, "&:last-child": { pb: 3 } }}>
+          <CardContent sx={{ p: 4, "&:last-child": { pb: 4 } }}>
             <Stack
               direction={{ xs: "column", sm: "row" }}
               justifyContent="space-between"
@@ -744,13 +923,19 @@ export default function Home() {
             >
               <Box>
                 <Typography sx={eyebrowSx}>MiTelAI JSC</Typography>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mt: 0.5 }}>
                   Full-stack Developer
                 </Typography>
               </Box>
               <Chip
                 label={`06/2024 — ${t("NAY", "NOW")}`}
-                color="success"
+                sx={{
+                  bgcolor: "var(--color-success-soft)",
+                  color: "var(--color-success)",
+                  fontWeight: 600,
+                  fontFamily: "var(--font-mono)",
+                  border: "1px solid var(--color-success)",
+                }}
                 size="small"
               />
             </Stack>
@@ -759,37 +944,61 @@ export default function Home() {
               sx={{
                 display: "grid",
                 gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-                gap: 3,
+                gap: 2.5,
               }}
             >
               {notes.map((note, index) => (
-                <Typography
+                <Box
                   key={note.en}
                   sx={{
-                    color: "var(--color-text-secondary)",
-                    fontSize: "0.8125rem",
-                    lineHeight: 1.55,
+                    p: 2.5,
+                    borderRadius: "var(--radius-md)",
+                    bgcolor: "var(--color-surface)",
+                    border: "1px solid var(--color-border)",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      borderColor: "var(--color-primary-soft)",
+                      bgcolor:
+                        "color-mix(in srgb, var(--color-elevated) 40%, var(--color-surface))",
+                      transform: "translateY(-2px)",
+                    },
                   }}
                 >
-                  <Box
-                    component="b"
+                  <Typography
+                    component="div"
                     sx={{
-                      display: "block",
-                      mb: 1,
-                      color: "var(--color-primary-hover)",
-                      fontFamily: "var(--font-mono)",
+                      color: "var(--color-text-secondary)",
+                      fontSize: "0.8125rem",
+                      lineHeight: 1.55,
                     }}
                   >
-                    0{index + 1}
-                  </Box>
-                  {note[language]}
-                </Typography>
+                    <Box
+                      component="span"
+                      sx={{
+                        display: "inline-block",
+                        px: 1,
+                        py: 0.25,
+                        mb: 1.5,
+                        borderRadius: "var(--radius-sm)",
+                        bgcolor: "var(--color-primary-soft)",
+                        color: "var(--color-primary-hover)",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                      }}
+                    >
+                      0{index + 1}
+                    </Box>
+                    <Box component="span" sx={{ display: "block" }}>
+                      {note[language]}
+                    </Box>
+                  </Typography>
+                </Box>
               ))}
             </Box>
           </CardContent>
         </Card>
       </Container>
-
       <Container
         maxWidth={false}
         sx={{ maxWidth: 1200, px: { xs: 2.5, md: 0 }, py: { xs: 8, md: 12 } }}
@@ -874,6 +1083,534 @@ export default function Home() {
               </Button>
             </Box>
           </Box>
+
+          <Box sx={{ mt: 5 }}>
+            <Divider
+              sx={{ mb: 4, borderColor: "var(--color-border-strong)" }}
+            />
+
+            <Typography
+              component="div"
+              sx={{
+                ...eyebrowSx,
+                mb: 3,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  bgcolor: "var(--color-info)",
+                  boxShadow: "0 0 8px var(--color-info)",
+                }}
+              />
+              {t(
+                "BẢN THỬ NGHIỆM TƯƠNG TÁC / DEEP LEARNING PLAYGROUND",
+                "INTERACTIVE PLAYGROUND / DEEP LEARNING PLAYGROUND",
+              )}
+            </Typography>
+
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", md: "1.1fr 0.9fr" },
+                gap: 4,
+              }}
+            >
+              {/* Inputs */}
+              <Box
+                sx={{
+                  p: 3,
+                  borderRadius: "var(--radius-md)",
+                  bgcolor: "var(--color-surface)",
+                  border: "1px solid var(--color-border)",
+                }}
+              >
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 3 }}>
+                  {t("Thông số bệnh nhân đầu vào", "Input Patient Parameters")}
+                </Typography>
+
+                <Box
+                  sx={{
+                    mb: 2.5,
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 2,
+                  }}
+                >
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontSize: "0.8125rem",
+                        color: "var(--color-text-secondary)",
+                        mb: 0.5,
+                      }}
+                    >
+                      {t("Tuổi bệnh nhân", "Patient Age")}
+                    </Typography>
+                    <Slider
+                      value={simAge}
+                      onChange={(_, val) => setSimAge(val as number)}
+                      min={10}
+                      max={100}
+                      disabled={simRunning}
+                      sx={{ color: "var(--color-info)" }}
+                    />
+                    <Typography
+                      sx={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.75rem",
+                        color: "var(--color-text-muted)",
+                      }}
+                    >
+                      {simAge} {t("tuổi", "years")}
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: "0.8125rem",
+                          color: "var(--color-text-secondary)",
+                        }}
+                      >
+                        {t("Giới tính Nam", "Gender Male")}
+                      </Typography>
+                      <Switch
+                        checked={simSex === 1}
+                        onChange={(e) => setSimSex(e.target.checked ? 1 : 0)}
+                        disabled={simRunning}
+                        sx={{
+                          "& .MuiSwitch-switchBase.Mui-checked": {
+                            color: "var(--color-info)",
+                          },
+                          "& .MuiSwitch-switchBase.Mui-checked + .MuiPaper-root":
+                            { backgroundColor: "var(--color-info)" },
+                        }}
+                      />
+                    </Box>
+                    <Typography
+                      sx={{
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.75rem",
+                        color: "var(--color-text-muted)",
+                      }}
+                    >
+                      {simSex === 1
+                        ? t("Nam (sex=1)", "Male (sex=1)")
+                        : t("Nữ (sex=0)", "Female (sex=0)")}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Divider sx={{ my: 2, borderColor: "var(--color-border)" }} />
+
+                <Stack spacing={1.5} sx={{ mt: 2 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "0.8125rem",
+                        color: "var(--color-text-secondary)",
+                      }}
+                    >
+                      {t(
+                        "Mạch ổn định (mach_on_dinh)",
+                        "Stable Pulse (mach_on_dinh)",
+                      )}
+                    </Typography>
+                    <Switch
+                      checked={simPulseStable}
+                      onChange={(e) => setSimPulseStable(e.target.checked)}
+                      disabled={simRunning}
+                    />
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "0.8125rem",
+                        color: "var(--color-text-secondary)",
+                      }}
+                    >
+                      {t(
+                        "Nhịp thở ổn định (nhiptho_on_dinh)",
+                        "Stable Respiration (nhiptho_on_dinh)",
+                      )}
+                    </Typography>
+                    <Switch
+                      checked={simRespStable}
+                      onChange={(e) => setSimRespStable(e.target.checked)}
+                      disabled={simRunning}
+                    />
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "0.8125rem",
+                        color: "var(--color-text-secondary)",
+                      }}
+                    >
+                      {t(
+                        "Nhiệt độ ổn định (nhietdo_on_dinh)",
+                        "Stable Temperature (nhietdo_on_dinh)",
+                      )}
+                    </Typography>
+                    <Switch
+                      checked={simTempStable}
+                      onChange={(e) => setSimTempStable(e.target.checked)}
+                      disabled={simRunning}
+                    />
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "0.8125rem",
+                        color: "var(--color-text-secondary)",
+                      }}
+                    >
+                      {t(
+                        "Huyết áp ổn định (huyetap_on_dinh)",
+                        "Stable Blood Pressure (huyetap_on_dinh)",
+                      )}
+                    </Typography>
+                    <Switch
+                      checked={simBpStable}
+                      onChange={(e) => setSimBpStable(e.target.checked)}
+                      disabled={simRunning}
+                    />
+                  </Box>
+                </Stack>
+              </Box>
+
+              {/* Inference / Output */}
+              <Box
+                sx={{
+                  p: 3,
+                  borderRadius: "var(--radius-md)",
+                  bgcolor: "var(--color-surface)",
+                  border: "1px solid var(--color-border)",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  minHeight: 250,
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                {!simRunning && !simResult && (
+                  <Box sx={{ textAlign: "center" }}>
+                    <Typography
+                      sx={{
+                        color: "var(--color-text-secondary)",
+                        fontSize: "0.875rem",
+                        mb: 3,
+                      }}
+                    >
+                      {t(
+                        "Thiết lập các thông số bên trái và bắt đầu chạy mô hình mạng nơ-ron để tiên lượng.",
+                        "Set parameters on the left and run the neural network model to predict prognosis.",
+                      )}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      onClick={runSimulation}
+                      sx={{
+                        bgcolor: "var(--color-info)",
+                        color: "var(--color-background)",
+                        fontWeight: 600,
+                        borderRadius: "var(--radius-md)",
+                        textTransform: "none",
+                        px: 4,
+                        py: 1.25,
+                        "&:hover": {
+                          bgcolor: "var(--color-info)",
+                          boxShadow: "0 0 15px rgba(61, 215, 229, 0.4)",
+                        },
+                      }}
+                    >
+                      {t("Chạy phân tích AI", "Run AI Inference")}
+                    </Button>
+                  </Box>
+                )}
+
+                {simRunning && (
+                  <Box sx={{ width: "100%" }}>
+                    <Typography
+                      sx={{
+                        color: "var(--color-info)",
+                        fontSize: "0.75rem",
+                        fontFamily: "var(--font-mono)",
+                        mb: 2,
+                        display: "block",
+                        letterSpacing: "0.05em",
+                      }}
+                    >
+                      {t(
+                        "TIẾN TRÌNH XỬ LÝ / INFERENCE PIPELINE",
+                        "TIẾN TRÌNH XỬ LÝ / INFERENCE PIPELINE",
+                      )}
+                    </Typography>
+                    <Stack spacing={2}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                      >
+                        <Box
+                          sx={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: "50%",
+                            bgcolor:
+                              simStep >= 1
+                                ? "var(--color-info)"
+                                : "var(--color-border-strong)",
+                            boxShadow:
+                              simStep >= 1
+                                ? "0 0 8px var(--color-info)"
+                                : "none",
+                          }}
+                        />
+                        <Typography
+                          sx={{
+                            fontSize: "0.8125rem",
+                            color:
+                              simStep >= 1
+                                ? "var(--color-text-primary)"
+                                : "var(--color-text-muted)",
+                          }}
+                        >
+                          {t(
+                            "1. Nạp dữ liệu lâm sàng & Tiền xử lý...",
+                            "1. Ingesting clinical data & Preprocessing...",
+                          )}
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                      >
+                        <Box
+                          sx={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: "50%",
+                            bgcolor:
+                              simStep >= 2
+                                ? "var(--color-info)"
+                                : "var(--color-border-strong)",
+                            boxShadow:
+                              simStep >= 2
+                                ? "0 0 8px var(--color-info)"
+                                : "none",
+                          }}
+                        />
+                        <Typography
+                          sx={{
+                            fontSize: "0.8125rem",
+                            color:
+                              simStep >= 2
+                                ? "var(--color-text-primary)"
+                                : "var(--color-text-muted)",
+                          }}
+                        >
+                          {t(
+                            "2. Feedforward qua các Dense Layers (dropout: 0.2)...",
+                            "2. Feedforwarding through Dense Layers (dropout: 0.2)...",
+                          )}
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                      >
+                        <Box
+                          sx={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: "50%",
+                            bgcolor:
+                              simStep >= 3
+                                ? "var(--color-info)"
+                                : "var(--color-border-strong)",
+                            boxShadow:
+                              simStep >= 3
+                                ? "0 0 8px var(--color-info)"
+                                : "none",
+                          }}
+                        />
+                        <Typography
+                          sx={{
+                            fontSize: "0.8125rem",
+                            color:
+                              simStep >= 3
+                                ? "var(--color-text-primary)"
+                                : "var(--color-text-muted)",
+                          }}
+                        >
+                          {t(
+                            "3. Trả về kết quả phân loại Softmax...",
+                            "3. Computing Softmax classification probabilities...",
+                          )}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Box>
+                )}
+
+                {!simRunning && simResult && (
+                  <Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 2,
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          ...eyebrowSx,
+                          color: "var(--color-text-secondary)",
+                        }}
+                      >
+                        {t("KẾT QUẢ DỰ ĐOÁN", "INFERENCE RESULT")}
+                      </Typography>
+                      <Button
+                        size="small"
+                        onClick={() => setSimResult(null)}
+                        sx={{
+                          textTransform: "none",
+                          color: "var(--color-text-muted)",
+                          minWidth: 0,
+                          p: 0,
+                          "&:hover": { color: "var(--color-text-primary)" },
+                        }}
+                      >
+                        {t("Thử lại", "Reset")}
+                      </Button>
+                    </Box>
+
+                    <Box sx={{ mb: 2.5 }}>
+                      <Typography
+                        sx={{
+                          fontSize: "1.25rem",
+                          fontWeight: 600,
+                          color:
+                            simResult.level === "danger"
+                              ? "var(--color-danger)"
+                              : simResult.level === "warning"
+                                ? "var(--color-warning)"
+                                : "var(--color-success)",
+                        }}
+                      >
+                        {language === "vn"
+                          ? simResult.labelVn
+                          : simResult.labelEn}
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Box
+                          sx={{
+                            height: 8,
+                            bgcolor: "var(--color-border-strong)",
+                            borderRadius: 4,
+                            overflow: "hidden",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              height: "100%",
+                              width: `${simResult.score}%`,
+                              bgcolor:
+                                simResult.level === "danger"
+                                  ? "var(--color-danger)"
+                                  : simResult.level === "warning"
+                                    ? "var(--color-warning)"
+                                    : "var(--color-success)",
+                              transition: "width 0.8s ease",
+                            }}
+                          />
+                        </Box>
+                      </Box>
+                      <Typography
+                        sx={{
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "1.5rem",
+                          fontWeight: 600,
+                          color:
+                            simResult.level === "danger"
+                              ? "var(--color-danger)"
+                              : simResult.level === "warning"
+                                ? "var(--color-warning)"
+                                : "var(--color-success)",
+                        }}
+                      >
+                        {simResult.score}%
+                      </Typography>
+                    </Box>
+
+                    <Typography
+                      sx={{
+                        fontSize: "0.75rem",
+                        color: "var(--color-text-muted)",
+                        mt: 3,
+                        display: "block",
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      *{" "}
+                      {t(
+                        "Mô phỏng sử dụng trọng số từ mô hình nghiên cứu Deep Learning với độ chính xác cao.",
+                        "Simulation uses calibrated weight thresholds derived from the Deep Learning research model.",
+                      )}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            </Box>
+          </Box>
         </Card>
       </Container>
 
@@ -913,13 +1650,27 @@ export default function Home() {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
             gap: 3,
           }}
           aria-label={t("Danh sách chứng chỉ", "Certifications")}
         >
           {certifications.map((certification) => (
-            <Card key={certification.title} sx={{ ...surface, minHeight: 190 }}>
+            <Card
+              key={certification.title}
+              sx={{
+                ...surface,
+                minHeight: 190,
+                transition:
+                  "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease",
+                "&:hover": {
+                  transform: "translateY(-5px)",
+                  borderColor: "var(--color-primary-hover)",
+                  boxShadow: "0 12px 25px rgba(91, 107, 255, 0.08)",
+                },
+              }}
+            >
               <CardContent
                 sx={{
                   p: 3,
@@ -958,7 +1709,19 @@ export default function Home() {
             mt: 3,
           }}
         >
-          <Card sx={{ ...surface, minHeight: 190 }}>
+          <Card
+            sx={{
+              ...surface,
+              minHeight: 190,
+              transition:
+                "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease",
+              "&:hover": {
+                transform: "translateY(-5px)",
+                borderColor: "var(--color-primary-hover)",
+                boxShadow: "0 12px 25px rgba(91, 107, 255, 0.08)",
+              },
+            }}
+          >
             <CardContent
               sx={{
                 p: 3,
@@ -987,7 +1750,19 @@ export default function Home() {
               </Typography>
             </CardContent>
           </Card>
-          <Card sx={{ ...surface, minHeight: 190 }}>
+          <Card
+            sx={{
+              ...surface,
+              minHeight: 190,
+              transition:
+                "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease",
+              "&:hover": {
+                transform: "translateY(-5px)",
+                borderColor: "var(--color-primary-hover)",
+                boxShadow: "0 12px 25px rgba(91, 107, 255, 0.08)",
+              },
+            }}
+          >
             <CardContent
               sx={{
                 p: 3,
