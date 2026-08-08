@@ -1,6 +1,8 @@
 "use client";
-
+import { useThemeMode } from "@/components/ThemeRegistry";
 import ArrowUpwardRounded from "@mui/icons-material/ArrowUpwardRounded";
+import DarkModeRounded from "@mui/icons-material/DarkModeRounded";
+import LightModeRounded from "@mui/icons-material/LightModeRounded";
 import MenuRounded from "@mui/icons-material/MenuRounded";
 import NorthEastRounded from "@mui/icons-material/NorthEastRounded";
 import AppBar from "@mui/material/AppBar";
@@ -107,6 +109,7 @@ function Arrow() {
 }
 
 export default function Home() {
+  const { mode, toggleTheme } = useThemeMode();
   const [menuOpen, setMenuOpen] = useState(false);
   const [language, setLanguage] = useState<"vn" | "en">("en");
   const theme = useTheme();
@@ -256,7 +259,7 @@ export default function Home() {
             }}
           >
             <Image
-              src="/logo-white.png"
+              src={mode === "light" ? "/logo-black.png" : "/logo-white.png"}
               alt=""
               width={40}
               height={40}
@@ -311,6 +314,29 @@ export default function Home() {
               <MenuRounded />
             </IconButton>
           )}
+          <IconButton
+            onClick={toggleTheme}
+            aria-label={t("Chuyển chế độ sáng/tối", "Toggle light/dark mode")}
+            size="small"
+            sx={{
+              ml: { xs: 1, md: 2 },
+              p: "6px",
+              color: "var(--color-text-secondary)",
+              bgcolor: "var(--color-surface)",
+              border: "1px solid var(--color-border)",
+              borderRadius: "var(--radius-full)",
+              "&:hover": {
+                color: "var(--color-text-primary)",
+                bgcolor: "var(--color-elevated)",
+              },
+            }}
+          >
+            {mode === "dark" ? (
+              <LightModeRounded fontSize="small" />
+            ) : (
+              <DarkModeRounded fontSize="small" />
+            )}
+          </IconButton>
           <ToggleButtonGroup
             value={language}
             exclusive
@@ -1647,150 +1673,154 @@ export default function Home() {
             </>
           )}
         </Typography>
+        {/* Timeline Container */}
         <Box
           sx={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
-            gap: 3,
+            position: "relative",
+            pl: { xs: 3.5, md: 5 },
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 8,
+              bottom: 8,
+              left: { xs: 8, md: 12 },
+              width: "2px",
+              bgcolor: "var(--color-border)",
+            },
           }}
-          aria-label={t("Danh sách chứng chỉ", "Certifications")}
         >
-          {certifications.map((certification) => (
-            <Card
-              key={certification.title}
+          {/* Timeline Events */}
+          {[
+            {
+              year: "2026",
+              type: t("CHỨNG CHỈ", "CERTIFICATION"),
+              title: "Google Project Management",
+              subtitle: t("Chứng chỉ quản lý dự án chuyên nghiệp từ Google", "Professional project management certification by Google"),
+              tagColor: "var(--color-primary)",
+            },
+            {
+              year: "2024",
+              type: t("GHI NHẬN", "RECOGNITION"),
+              title: t("Tốt nghiệp loại Giỏi", "Good Graduation"),
+              subtitle: t("Đại học An Giang", "An Giang University"),
+              tagColor: "var(--color-success)",
+            },
+            {
+              year: "2020 — 2024",
+              type: t("HỌC VẤN", "EDUCATION"),
+              title: t("Công nghệ thông tin", "Information Technology"),
+              subtitle: t("An Giang University · GPA 3.51 / 4", "An Giang University · GPA 3.51 / 4"),
+              tagColor: "var(--color-info)",
+            },
+            {
+              year: "2022",
+              type: t("CHỨNG CHỈ", "CERTIFICATION"),
+              title: "VSTEP B1",
+              subtitle: t("Chứng chỉ năng lực tiếng Anh", "English language proficiency certificate"),
+              tagColor: "var(--color-warning)",
+            },
+          ].map((event, index, arr) => (
+            <Box
+              key={index}
               sx={{
-                ...surface,
-                minHeight: 190,
-                transition:
-                  "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease",
-                "&:hover": {
-                  transform: "translateY(-5px)",
-                  borderColor: "var(--color-primary-hover)",
-                  boxShadow: "0 12px 25px rgba(91, 107, 255, 0.08)",
-                },
+                position: "relative",
+                mb: index === arr.length - 1 ? 0 : 5,
               }}
             >
-              <CardContent
+              {/* Timeline Indicator Node */}
+              <Box
                 sx={{
-                  p: 3,
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  "&:last-child": { pb: 3 },
+                  position: "absolute",
+                  left: { xs: -22 - 6, md: -29 - 8 },
+                  top: 24,
+                  width: { xs: 12, md: 16 },
+                  height: { xs: 12, md: 16 },
+                  borderRadius: "50%",
+                  bgcolor: "var(--color-surface)",
+                  border: `3px solid ${event.tagColor}`,
+                  boxShadow: `0 0 0 4px var(--color-background), 0 0 12px ${event.tagColor}`,
+                  zIndex: 2,
+                }}
+              />
+
+              {/* Event Content Card */}
+              <Card
+                sx={{
+                  ...surface,
+                  transition:
+                    "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease",
+                  "&:hover": {
+                    transform: "translateX(8px)",
+                    borderColor: "var(--color-primary-hover)",
+                    boxShadow: `0 8px 30px ${event.tagColor}1F`,
+                  },
                 }}
               >
-                <Typography sx={eyebrowSx}>
-                  {t("CHỨNG CHỈ", "CERTIFICATION")}
-                </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{ mt: "auto", mb: 1, fontWeight: 600 }}
-                >
-                  {certification.title}
-                </Typography>
-                <Typography
-                  sx={{
-                    color: "var(--color-text-secondary)",
-                    fontSize: "0.8125rem",
-                  }}
-                >
-                  {certification.date[language]}
-                </Typography>
-              </CardContent>
-            </Card>
+                <CardContent sx={{ p: { xs: 2.5, md: 3 }, "&:last-child": { pb: { xs: 2.5, md: 3 } } }}>
+                  <Stack
+                    direction={{ xs: "column", md: "row" }}
+                    spacing={{ xs: 1.5, md: 3 }}
+                    alignItems={{ xs: "flex-start", md: "center" }}
+                    justifyContent="space-between"
+                  >
+                    <Box>
+                      {/* Event Tag */}
+                      <Chip
+                        label={event.type}
+                        size="small"
+                        sx={{
+                          bgcolor: `${event.tagColor}1A`,
+                          color: event.tagColor,
+                          border: `1px solid ${event.tagColor}33`,
+                          fontSize: "0.7rem",
+                          fontWeight: 600,
+                          letterSpacing: "0.05em",
+                          mb: 1.5,
+                        }}
+                      />
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: 600,
+                          lineHeight: 1.3,
+                          color: "var(--color-text-primary)",
+                        }}
+                      >
+                        {event.title}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          mt: 0.5,
+                          color: "var(--color-text-secondary)",
+                        }}
+                      >
+                        {event.subtitle}
+                      </Typography>
+                    </Box>
+
+                    {/* Timeline Date Tag */}
+                    <Box
+                      sx={{
+                        px: 2,
+                        py: 0.75,
+                        borderRadius: "var(--radius-full)",
+                        bgcolor: "var(--color-elevated)",
+                        border: "1px solid var(--color-border)",
+                        color: "var(--color-text-secondary)",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.8rem",
+                        fontWeight: 600,
+                        alignSelf: { xs: "flex-start", md: "center" },
+                      }}
+                    >
+                      {event.year}
+                    </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Box>
           ))}
-        </Box>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
-            gap: 3,
-            mt: 3,
-          }}
-        >
-          <Card
-            sx={{
-              ...surface,
-              minHeight: 190,
-              transition:
-                "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease",
-              "&:hover": {
-                transform: "translateY(-5px)",
-                borderColor: "var(--color-primary-hover)",
-                boxShadow: "0 12px 25px rgba(91, 107, 255, 0.08)",
-              },
-            }}
-          >
-            <CardContent
-              sx={{
-                p: 3,
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                "&:last-child": { pb: 3 },
-              }}
-            >
-              <Typography sx={eyebrowSx}>
-                {t("GHI NHẬN", "RECOGNITION")}
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{ mt: "auto", mb: 1, fontWeight: 600 }}
-              >
-                {t("Tốt nghiệp loại Giỏi", "Good Graduation")}
-              </Typography>
-              <Typography
-                sx={{
-                  color: "var(--color-text-secondary)",
-                  fontSize: "0.8125rem",
-                }}
-              >
-                {t("Đại học An Giang · 2024", "An Giang University · 2024")}
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card
-            sx={{
-              ...surface,
-              minHeight: 190,
-              transition:
-                "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease",
-              "&:hover": {
-                transform: "translateY(-5px)",
-                borderColor: "var(--color-primary-hover)",
-                boxShadow: "0 12px 25px rgba(91, 107, 255, 0.08)",
-              },
-            }}
-          >
-            <CardContent
-              sx={{
-                p: 3,
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                "&:last-child": { pb: 3 },
-              }}
-            >
-              <Typography sx={eyebrowSx}>
-                {t("HỌC VẤN", "EDUCATION")}
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{ mt: "auto", mb: 1, fontWeight: 600 }}
-              >
-                {t("Công nghệ thông tin", "Information Technology")}
-              </Typography>
-              <Typography
-                sx={{
-                  color: "var(--color-text-secondary)",
-                  fontSize: "0.8125rem",
-                }}
-              >
-                An Giang University · 2020 — 2024 · GPA 3.51 / 4
-              </Typography>
-            </CardContent>
-          </Card>
         </Box>
       </Container>
 

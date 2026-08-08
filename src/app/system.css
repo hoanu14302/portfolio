@@ -4,43 +4,47 @@
    ============================================================= */
 
 :root {
-  /* ---------- Color: Surface tiers ---------- */
-  --color-background: #0A0B0F;
-  --color-surface: #14151C;
-  --color-elevated: #1E2029;
-  --color-overlay: rgba(10, 11, 15, 0.72);
+  /* ---------- Color: Surface tiers (Light Mode Default) ---------- */
+  --color-background: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-elevated: #F1F5F9;
+  --color-overlay: rgba(248, 250, 252, 0.72);
 
   /* ---------- Color: Borders ---------- */
-  --color-border: #2A2D38;
-  --color-border-strong: #3A3D4A;
-  --color-border-soft: rgba(255, 255, 255, 0.04);
+  --color-border: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-border-soft: rgba(0, 0, 0, 0.03);
 
   /* ---------- Color: Foreground ---------- */
-  --color-text-primary: #F2F4F8;
-  --color-text-secondary: #9AA0AE;
-  --color-text-muted: #5C6170;
-  --color-text-inverse: #0A0B0F;
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748B;
+  --color-text-inverse: #FFFFFF;
 
   /* ---------- Color: Brand ---------- */
-  --color-primary: #5B6BFF;
-  --color-primary-hover: #7886FF;
-  --color-primary-pressed: #4A59E6;
-  --color-primary-soft: rgba(91, 107, 255, 0.12);
+  --color-primary: #4F46E5;
+  --color-primary-hover: #4338CA;
+  --color-primary-pressed: #3730A3;
+  --color-primary-soft: rgba(79, 70, 229, 0.08);
 
   /* ---------- Color: Signal ---------- */
-  --color-success: #2BE08C;
-  --color-warning: #F5D547;
-  --color-info: #3DD7E5;
-  --color-danger: #FF3A5C;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-info: #06B6D4;
+  --color-danger: #EF4444;
 
-  --color-success-soft: rgba(43, 224, 140, 0.12);
-  --color-warning-soft: rgba(245, 213, 71, 0.14);
-  --color-info-soft: rgba(61, 215, 229, 0.14);
-  --color-danger-soft: rgba(255, 58, 92, 0.14);
+  --color-success-soft: rgba(16, 185, 129, 0.08);
+  --color-warning-soft: rgba(245, 158, 11, 0.08);
+  --color-info-soft: rgba(6, 182, 212, 0.08);
+  --color-danger-soft: rgba(239, 68, 68, 0.08);
+
+  /* ---------- Glow Effects ---------- */
+  --glow-opacity: 0.04;
+  --glow-blend: multiply;
 
   /* ---------- Typography ---------- */
-  --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-lexend), "Inter", -apple-system, sans-serif;
+  --font-body: var(--font-lexend), "Inter", -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --text-display-size: clamp(2.75rem, 6vw, 4.5rem);
@@ -114,13 +118,13 @@
   --border-width-thick: 1.5px;
 
   /* ---------- Elevation ---------- */
-  --shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.02) inset, 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.03) inset;
-  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
 
   /* ---------- Focus ---------- */
-  --focus-ring: 0 0 0 3px rgba(91, 107, 255, 0.35);
-  --focus-ring-color: rgba(91, 107, 255, 0.35);
+  --focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.35);
+  --focus-ring-color: rgba(79, 70, 229, 0.35);
 
   /* ---------- Motion ---------- */
   --motion-fast: 120ms;
@@ -131,6 +135,55 @@
   /* ---------- Layout ---------- */
   --container-max: 1200px;
   --container-pad: clamp(20px, 4vw, 48px);
+}
+
+:root[data-theme="dark"] {
+  /* ---------- Color: Surface tiers (Dark Mode) ---------- */
+  --color-background: #0A0B0F;
+  --color-surface: #14151C;
+  --color-elevated: #1E2029;
+  --color-overlay: rgba(10, 11, 15, 0.72);
+
+  /* ---------- Color: Borders ---------- */
+  --color-border: #2A2D38;
+  --color-border-strong: #3A3D4A;
+  --color-border-soft: rgba(255, 255, 255, 0.04);
+
+  /* ---------- Color: Foreground ---------- */
+  --color-text-primary: #F2F4F8;
+  --color-text-secondary: #9AA0AE;
+  --color-text-muted: #5C6170;
+  --color-text-inverse: #0A0B0F;
+
+  /* ---------- Color: Brand ---------- */
+  --color-primary: #5B6BFF;
+  --color-primary-hover: #7886FF;
+  --color-primary-pressed: #4A59E6;
+  --color-primary-soft: rgba(91, 107, 255, 0.12);
+
+  /* ---------- Color: Signal ---------- */
+  --color-success: #2BE08C;
+  --color-warning: #F5D547;
+  --color-info: #3DD7E5;
+  --color-danger: #FF3A5C;
+
+  --color-success-soft: rgba(43, 224, 140, 0.12);
+  --color-warning-soft: rgba(245, 213, 71, 0.14);
+  --color-info-soft: rgba(61, 215, 229, 0.14);
+  --color-danger-soft: rgba(255, 58, 92, 0.14);
+
+  /* ---------- Glow Effects ---------- */
+  --glow-opacity: 0.08;
+  --glow-blend: screen;
+
+  /* ---------- Elevation ---------- */
+  --shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.02) inset, 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+
+  /* ---------- Focus ---------- */
+  --focus-ring: 0 0 0 3px rgba(91, 107, 255, 0.35);
+  --focus-ring-color: rgba(91, 107, 255, 0.35);
 }
 
 /* =============================================================

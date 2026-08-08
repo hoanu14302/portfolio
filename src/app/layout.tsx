@@ -1,6 +1,14 @@
 import ThemeRegistry from "@/components/ThemeRegistry";
 import type { Metadata } from "next";
+import { Lexend } from "next/font/google";
 import "./globals.css";
+
+const lexend = Lexend({
+  subsets: ["vietnamese", "latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-lexend",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://dhnu.io.vn"),
@@ -91,7 +99,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   };
 
   return (
-    <html lang="vi">
+    <html lang="vi" className={lexend.variable}>
       <body>
         <script
           type="application/ld+json"
