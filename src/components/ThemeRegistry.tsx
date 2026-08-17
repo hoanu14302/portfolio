@@ -1,9 +1,9 @@
 "use client";
-import theme from "@/theme";
+import { getAppTheme } from "@/theme";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import * as React from "react";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const ThemeModeContext = createContext<{
   mode: "light" | "dark";
@@ -27,7 +27,9 @@ export default function ThemeRegistry({
     if (savedMode) {
       setMode(savedMode);
     } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
       setMode(prefersDark ? "dark" : "light");
     }
   }, []);
@@ -41,9 +43,11 @@ export default function ThemeRegistry({
     setMode((prev) => (prev === "light" ? "dark" : "light"));
   };
 
+  const currentTheme = useMemo(() => getAppTheme(mode), [mode]);
+
   return (
     <ThemeModeContext.Provider value={{ mode, toggleTheme }}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={currentTheme}>
         <CssBaseline />
         {children}
       </ThemeProvider>

@@ -1,7 +1,8 @@
 "use client";
+import GallerySection from "@/components/GallerySection";
 import { useThemeMode } from "@/components/ThemeRegistry";
-import ArrowUpwardRounded from "@mui/icons-material/ArrowUpwardRounded";
 import DarkModeRounded from "@mui/icons-material/DarkModeRounded";
+import KeyboardArrowUpRounded from "@mui/icons-material/KeyboardArrowUpRounded";
 import LightModeRounded from "@mui/icons-material/LightModeRounded";
 import MenuRounded from "@mui/icons-material/MenuRounded";
 import NorthEastRounded from "@mui/icons-material/NorthEastRounded";
@@ -283,6 +284,7 @@ export default function Home() {
                 ["#top", t("Trang chủ", "Home")],
                 ["#work", t("Kinh nghiệm", "Experience")],
                 ["#research", t("Nghiên cứu", "Research")],
+                ["/image-effects", t("Hiệu ứng ảnh Python", "Python Effects")],
                 ["#contact", t("Liên hệ", "Contact")],
               ].map(([href, label]) => (
                 <Button
@@ -431,6 +433,7 @@ export default function Home() {
                 ["#top", t("Trang chủ", "Home")],
                 ["#work", t("Kinh nghiệm", "Experience")],
                 ["#research", t("Nghiên cứu", "Research")],
+                ["/image-effects", t("Hiệu ứng ảnh Python", "Python Effects")],
                 ["#contact", t("Liên hệ", "Contact")],
               ].map(([href, label]) => (
                 <Button
@@ -491,6 +494,7 @@ export default function Home() {
                 fontWeight: 600,
                 lineHeight: 1.04,
                 letterSpacing: "-0.03em",
+                color: "var(--color-text-primary)",
               }}
             >
               {isEnglish ? (
@@ -544,6 +548,25 @@ export default function Home() {
                 }}
               >
                 {t("Xem năng lực", "Explore my work")}
+              </Button>
+              <Button
+                variant="outlined"
+                href="/image-effects"
+                endIcon={<Arrow />}
+                sx={{
+                  color: "var(--color-primary)",
+                  borderColor: "var(--color-primary)",
+                  borderRadius: "var(--radius-md)",
+                  textTransform: "none",
+                  fontWeight: 600,
+                  bgcolor: "rgba(91, 107, 255, 0.08)",
+                  "&:hover": {
+                    bgcolor: "rgba(91, 107, 255, 0.16)",
+                    borderColor: "var(--color-primary)",
+                  },
+                }}
+              >
+                {t("Dự án Hiệu ứng Ảnh Python", "Python Image Effects Studio")}
               </Button>
               <Button
                 variant="outlined"
@@ -672,6 +695,7 @@ export default function Home() {
             fontSize: "2.25rem",
             fontWeight: 600,
             lineHeight: 1.12,
+            color: "var(--color-text-primary)",
           }}
         >
           {isEnglish ? (
@@ -890,6 +914,7 @@ export default function Home() {
                 fontSize: "2.25rem",
                 fontWeight: 600,
                 lineHeight: 1.12,
+                color: "var(--color-text-primary)",
               }}
             >
               {isEnglish ? (
@@ -1025,6 +1050,10 @@ export default function Home() {
           </CardContent>
         </Card>
       </Container>
+
+      {/* 03 / GALLERY & SHOWCASE (Tạm ẩn theo yêu cầu) */}
+      {/* <GallerySection language={language} /> */}
+
       <Container
         maxWidth={false}
         sx={{ maxWidth: 1200, px: { xs: 2.5, md: 0 }, py: { xs: 8, md: 12 } }}
@@ -1047,7 +1076,7 @@ export default function Home() {
           >
             <Box>
               <Typography sx={eyebrowSx}>
-                03 / {t("Nghiên cứu học thuật", "Research")}
+                04 / {t("Nghiên cứu học thuật", "Research")}
               </Typography>
               <Typography
                 component="h2"
@@ -1056,6 +1085,7 @@ export default function Home() {
                   fontSize: "2.25rem",
                   fontWeight: 600,
                   lineHeight: 1.12,
+                  color: "var(--color-text-primary)",
                 }}
               >
                 {isEnglish ? (
@@ -1645,11 +1675,17 @@ export default function Home() {
         sx={{ maxWidth: 1200, px: { xs: 2.5, md: 0 }, py: { xs: 8, md: 12 } }}
       >
         <Typography sx={eyebrowSx}>
-          04 / {t("Chứng nhận", "Credentials")}
+          05 / {t("Chứng nhận", "Credentials")}
         </Typography>
         <Typography
           component="h2"
-          sx={{ mt: 1.5, mb: 4, fontSize: "2.25rem", fontWeight: 600 }}
+          sx={{
+            mt: 1.5,
+            mb: 4,
+            fontSize: "2.25rem",
+            fontWeight: 600,
+            color: "var(--color-text-primary)",
+          }}
         >
           {isEnglish ? (
             <>
@@ -1695,7 +1731,10 @@ export default function Home() {
               year: "2026",
               type: t("CHỨNG CHỈ", "CERTIFICATION"),
               title: "Google Project Management",
-              subtitle: t("Chứng chỉ quản lý dự án chuyên nghiệp từ Google", "Professional project management certification by Google"),
+              subtitle: t(
+                "Chứng chỉ quản lý dự án chuyên nghiệp từ Google",
+                "Professional project management certification by Google",
+              ),
               tagColor: "var(--color-primary)",
             },
             {
@@ -1709,14 +1748,20 @@ export default function Home() {
               year: "2020 — 2024",
               type: t("HỌC VẤN", "EDUCATION"),
               title: t("Công nghệ thông tin", "Information Technology"),
-              subtitle: t("An Giang University · GPA 3.51 / 4", "An Giang University · GPA 3.51 / 4"),
+              subtitle: t(
+                "An Giang University · GPA 3.51 / 4",
+                "An Giang University · GPA 3.51 / 4",
+              ),
               tagColor: "var(--color-info)",
             },
             {
               year: "2022",
               type: t("CHỨNG CHỈ", "CERTIFICATION"),
               title: "VSTEP B1",
-              subtitle: t("Chứng chỉ năng lực tiếng Anh", "English language proficiency certificate"),
+              subtitle: t(
+                "Chứng chỉ năng lực tiếng Anh",
+                "English language proficiency certificate",
+              ),
               tagColor: "var(--color-warning)",
             },
           ].map((event, index, arr) => (
@@ -1756,7 +1801,12 @@ export default function Home() {
                   },
                 }}
               >
-                <CardContent sx={{ p: { xs: 2.5, md: 3 }, "&:last-child": { pb: { xs: 2.5, md: 3 } } }}>
+                <CardContent
+                  sx={{
+                    p: { xs: 2.5, md: 3 },
+                    "&:last-child": { pb: { xs: 2.5, md: 3 } },
+                  }}
+                >
                   <Stack
                     direction={{ xs: "column", md: "row" }}
                     spacing={{ xs: 1.5, md: 3 }}
@@ -1838,7 +1888,7 @@ export default function Home() {
           maxWidth={false}
           sx={{ maxWidth: 1200, px: { xs: 2.5, md: 0 } }}
         >
-          <Typography sx={eyebrowSx}>05 / {t("Liên hệ", "Contact")}</Typography>
+          <Typography sx={eyebrowSx}>06 / {t("Liên hệ", "Contact")}</Typography>
           <Typography
             component="h2"
             sx={{
@@ -1847,6 +1897,7 @@ export default function Home() {
               fontSize: "clamp(3rem, 8vw, 6rem)",
               fontWeight: 600,
               lineHeight: 1.02,
+              color: "var(--color-text-primary)",
             }}
           >
             {isEnglish ? (
@@ -1929,7 +1980,7 @@ export default function Home() {
           </span>
           <Button
             href="#top"
-            endIcon={<ArrowUpwardRounded fontSize="small" />}
+            endIcon={<KeyboardArrowUpRounded fontSize="small" />}
             sx={{
               p: 0,
               minWidth: 0,

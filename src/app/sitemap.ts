@@ -8,5 +8,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "yearly",
       priority: 1,
     },
+    {
+      url: "https://dhnu.io.vn/image-effects",
+      lastModified: new Date("2026-08-16"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
   ];
 }
