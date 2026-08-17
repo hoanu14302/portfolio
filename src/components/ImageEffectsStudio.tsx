@@ -1267,42 +1267,11 @@ export default function ImageEffectsStudio({
               borderRadius: "8px",
               py: 0.5,
               alignItems: "center",
-              "& .MuiAlert-message": { width: "100%" },
+              fontSize: "0.825rem",
+              fontWeight: 600,
             }}
           >
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              justifyContent="space-between"
-              alignItems={{ xs: "flex-start", sm: "center" }}
-              spacing={1}
-            >
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: 600, fontSize: "0.825rem" }}
-              >
-                {aiSuccessMessage}
-              </Typography>
-              <Button
-                variant="contained"
-                size="small"
-                startIcon={<LocalCafeRounded sx={{ fontSize: "1rem" }} />}
-                onClick={handleOpenCheckout}
-                sx={{
-                  bgcolor: "#F59E0B",
-                  color: "#FFFFFF",
-                  fontWeight: 700,
-                  fontSize: "0.775rem",
-                  textTransform: "none",
-                  borderRadius: "6px",
-                  py: 0.4,
-                  px: 1.2,
-                  whiteSpace: "nowrap",
-                  "&:hover": { bgcolor: "#D97706" },
-                }}
-              >
-                {t("Buy Me a Coffee & Tải code", "Buy Me a Coffee & Get Code")}
-              </Button>
-            </Stack>
+            {aiSuccessMessage}
           </Alert>
         )}
       </Box>
