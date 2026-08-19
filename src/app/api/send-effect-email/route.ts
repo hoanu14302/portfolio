@@ -56,6 +56,13 @@ export async function POST(req: NextRequest) {
     const resendApiKey = process.env.RESEND_API_KEY;
     let emailSentViaApi = false;
 
+    const sanitizedFileName = `${(effectName || "effect")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "") || "effect_script"}.py`;
+
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; color: #1e293b; background: #ffffff;">
         <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px;">
@@ -75,9 +82,13 @@ export async function POST(req: NextRequest) {
           </ul>
         </div>
 
-        <p style="font-weight: bold; margin-bottom: 6px; font-size: 14px;">Mã nguồn Python OpenCV & NumPy:</p>
-        <div style="background: #0f172a; color: #38bdf8; padding: 16px; border-radius: 8px; overflow-x: auto; font-family: monospace; font-size: 13px; margin: 0 0 20px 0;">
-          <pre style="margin: 0; white-space: pre-wrap;">${pythonCode}</pre>
+        <div style="background: #f0fdf4; padding: 16px; border-radius: 8px; margin: 20px 0; border: 1px solid #bbf7d0;">
+          <p style="margin: 0 0 6px 0; font-weight: bold; color: #166534; font-size: 14px;">
+            📎 Tệp đính kèm mã nguồn: <span style="font-family: monospace; background: #dcfce7; padding: 2px 6px; border-radius: 4px;">${sanitizedFileName}</span>
+          </p>
+          <p style="margin: 0; color: #15803d; font-size: 13px; line-height: 1.5;">
+            Toàn bộ mã nguồn Python OpenCV &amp; NumPy đã được đóng gói và đính kèm trong email này. Quý khách vui lòng tải tệp về để chạy thử và tích hợp vào dự án.
+          </p>
         </div>
 
         <p style="font-size: 13px; color: #64748b; line-height: 1.6;">Nếu bạn có nhu cầu tích hợp sâu vào hệ thống hoặc cần viết thêm module theo yêu cầu, vui lòng liên hệ Zalo: <strong>0967.223.771</strong> hoặc email <strong>hoanu14302@gmail.com</strong>.</p>
@@ -107,6 +118,13 @@ export async function POST(req: NextRequest) {
           to: recipientEmail,
           subject: emailSubject,
           html: emailHtml,
+          attachments: [
+            {
+              filename: sanitizedFileName,
+              content: pythonCode || "# No code provided",
+              contentType: "text/x-python",
+            },
+          ],
         });
 
         emailSentViaApi = true;
@@ -129,6 +147,12 @@ export async function POST(req: NextRequest) {
             to: [recipientEmail],
             subject: emailSubject,
             html: emailHtml,
+            attachments: [
+              {
+                filename: sanitizedFileName,
+                content: Buffer.from(pythonCode || "# No code provided", "utf-8").toString("base64"),
+              },
+            ],
           }),
         });
 
